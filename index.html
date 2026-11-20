@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CCAR-F MCP Assessment Portal</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">AI</div><div><strong>CCAR-F Assessment</strong><small>MCP · Certification Practice</small></div></div>
+  <button id="adminNav" class="btn btn-ghost">Trainer dashboard</button>
+</header>
+<main class="shell">
+  <section id="homeView" class="view">
+    <div class="hero">
+      <div class="eyebrow">CLAUDE CERTIFIED ARCHITECT · FOUNDATIONS</div>
+      <h1>Model Context Protocol<br><span>Practice Assessment</span></h1>
+      <p>Test your understanding of MCP architecture, primitives, tool design, integration patterns and transports.</p>
+      <div class="chips"><span>24 questions</span><span>30 minutes</span><span>Instant results</span></div>
+    </div>
+    <div class="panel form-panel">
+      <div class="panel-heading"><div><div class="eyebrow">PARTICIPANT REGISTRATION</div><h2>Start your assessment</h2></div><div class="step">01 <i>/ 02</i></div></div>
+      <form id="startForm">
+        <label>Full name<input id="participantName" autocomplete="name" required minlength="2" maxlength="120" placeholder="Enter your full name"></label>
+        <label>Email address<input id="participantEmail" type="email" autocomplete="email" required maxlength="254" placeholder="name@company.com"></label>
+        <label>Choose your assessment<select id="participantRole" required><option value="">Select role</option><option>Developer</option><option>Manager</option><option>QA</option></select></label>
+        <div class="notice"><strong>Before you begin</strong><ul><li>You have 30 minutes to complete 24 questions.</li><li>Your answers are submitted automatically when the timer expires.</li><li>You can review your score and explanations after submission.</li><li>Use one attempt per participant unless your trainer advises otherwise.</li></ul></div>
+        <button class="btn btn-primary btn-wide" type="submit">Start assessment <span>→</span></button>
+        <p id="startError" class="error"></p>
+      </form>
+    </div>
+    <p class="privacy">Your name, email address and assessment result will be stored for training and assessment reporting. Access to participant-level reports is restricted to authorised trainers.</p>
+  </section>
+
+  <section id="quizView" class="view hidden">
+    <div class="quiz-head">
+      <div><div class="eyebrow" id="quizRole">ASSESSMENT</div><h2 id="quizTitle">MCP knowledge check</h2><div class="muted" id="participantLabel"></div></div>
+      <div class="timerbox"><small>TIME REMAINING</small><strong id="timer">30:00</strong></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-meta"><span id="progressText">Question 1 of 24</span><span id="answeredText">0 answered</span></div><div class="progress"><span id="progressBar"></span></div></div>
+    <div class="quiz-layout">
+      <aside class="question-nav panel"><h3>Questions</h3><div id="questionGrid" class="qgrid"></div><div class="legend"><span><i class="dot current"></i>Current</span><span><i class="dot done"></i>Answered</span></div></aside>
+      <article class="panel question-panel">
+        <div class="qmeta"><span id="sectionTag" class="tag"></span><span id="pointsTag" class="muted"></span></div>
+        <div class="qnumber" id="qNumber">QUESTION 01</div><h2 id="questionText"></h2>
+        <div id="options" class="options"></div>
+        <div class="question-actions"><button id="prevBtn" class="btn btn-secondary">← Previous</button><button id="nextBtn" class="btn btn-primary">Next question →</button></div>
+      </article>
+    </div>
+    <div class="submit-row"><span id="completionHint">You can review unanswered questions before submitting.</span><button id="submitBtn" class="btn btn-danger">Submit assessment</button></div>
+    <p id="quizError" class="error"></p>
+  </section>
+
+  <section id="resultView" class="view hidden">
+    <div class="result-hero panel">
+      <div class="eyebrow">ASSESSMENT SUBMITTED</div><h1 id="resultHeading">Your result</h1>
+      <div class="scoreline"><strong id="scoreValue">0/24</strong><span id="percentValue">0%</span></div>
+      <p id="resultMessage"></p><div id="expiredNote" class="warning hidden">The 30-minute time limit was reached. Your submitted answers have been scored.</div>
+    </div>
+    <div class="panel"><div class="panel-heading"><div><div class="eyebrow">PERFORMANCE BREAKDOWN</div><h2>Section-wise results</h2></div></div><div id="sectionResults" class="section-results"></div></div>
+    <div class="panel"><div class="panel-heading"><div><div class="eyebrow">ANSWER REVIEW</div><h2>Questions and explanations</h2></div></div><div id="answerReview"></div></div>
+    <button id="returnHome" class="btn btn-secondary">Return to portal</button>
+  </section>
+
+  <section id="adminView" class="view hidden">
+    <div class="admin-heading"><div><div class="eyebrow">RESTRICTED ACCESS</div><h1>Trainer dashboard</h1><p class="muted">Participant results and cohort performance</p></div><button id="backHome" class="btn btn-secondary">← Assessment portal</button></div>
+    <div id="loginPanel" class="panel admin-login">
+      <h2>Trainer sign in</h2><p class="muted">Use your authorised Supabase trainer account.</p>
+      <form id="loginForm"><label>Email<input id="adminEmail" type="email" required autocomplete="username"></label><label>Password<input id="adminPassword" type="password" required autocomplete="current-password"></label><button class="btn btn-primary btn-wide">Sign in</button><p id="loginError" class="error"></p></form>
+    </div>
+    <div id="dashboardPanel" class="hidden">
+      <div class="dash-toolbar"><div><span class="tag green">AUTHORISED TRAINER</span><span id="adminIdentity" class="muted"></span></div><div class="toolbar-actions"><button id="refreshReport" class="btn btn-secondary">Refresh</button><button id="exportCsv" class="btn btn-secondary">Export CSV</button><button id="exportXlsx" class="btn btn-primary">Export Excel</button><button id="logoutBtn" class="btn btn-ghost">Sign out</button></div></div>
+      <div class="stats-grid"><div class="stat panel"><small>SUBMISSIONS</small><strong id="statCount">0</strong></div><div class="stat panel"><small>AVERAGE SCORE</small><strong id="statAverage">0%</strong></div><div class="stat panel"><small>DEVELOPER</small><strong id="statDeveloper">0</strong></div><div class="stat panel"><small>MANAGER / QA</small><strong id="statOther">0</strong></div></div>
+      <div class="panel"><div class="panel-heading"><div><div class="eyebrow">COHORT INSIGHTS</div><h2>Section performance</h2></div><select id="roleFilter"><option value="All">All roles</option><option>Developer</option><option>Manager</option><option>QA</option></select></div><div id="adminSections" class="section-results"></div></div>
+      <div class="panel"><div class="panel-heading"><div><div class="eyebrow">SUBMISSION REGISTER</div><h2>Participant scores</h2></div><input id="searchParticipants" class="search" placeholder="Search name or email"></div>
+        <div class="table-wrap"><table><thead><tr><th>Participant</th><th>Email</th><th>Role</th><th>Score</th><th>Percentage</th><th>Submitted</th><th>Time</th></tr></thead><tbody id="participantRows"></tbody></table></div>
+      </div>
+      <p class="muted tiny">Reports are limited to the latest 5,000 submissions returned by the server.</p>
+    </div>
+  </section>
+</main>
+<footer>CCAR-F MCP Practice Assessment · Independent training resource · Not an official Anthropic examination</footer>
+<script src="./app.js"></script>
+</body></html>
