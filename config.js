@@ -3,6 +3,6 @@
 // NEVER place the service-role/secret key in this file.
 window.APP_CONFIG = {
   SUPABASE_URL: "https://paiwgudospsuzlavfqaked.supabase.co",
-  SUPABASE_ANON_KEY: "PASTE_YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY_HERE",
+  SUPABASE_ANON_KEY: "sb_secret_vYpDA7xVC-7P6LxaaWdzHw_04rm7eF5",
   TIMER_MINUTES: 30
 };
